@@ -10,76 +10,37 @@ To write a python program for creating File Transfer using TCP Sockets Links
 ## PROGRAM
 server.py
 ```
-import socket
-import os
-SERVER_HOST = "127.0.0.1"
-SERVER_PORT = 5001
-BUFFER_SIZE = 4096 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((SERVER_HOST, SERVER_PORT))
-server.listen(1)
-print("Server listening on port", SERVER_PORT)
-conn, addr = server.accept()
-print("Connected from:", addr)
-try:
-    filename = conn.recv(BUFFER_SIZE).decode()
-    filesize = int(conn.recv(BUFFER_SIZE).decode())
-    print(f"Receiving file: {filename}")
-    print(f"File size: {filesize} bytes")
-    received_size = 0
-    with open("received_" + filename, "wb") as f:
-        while received_size < filesize:
-            bytes_read = conn.recv(BUFFER_SIZE)
-            if not bytes_read:
-                break
-            f.write(bytes_read)
-            received_size += len(bytes_read)
-            progress = (received_size / filesize) * 100
-            print(f"Progress: {progress:.2f}%", end="\r")
-    print("\nFile received successfully!")
-except Exception as e:
-    print("Error:", e)
-finally:
-    conn.close()
-    server.close()
+import socket             
+s = socket.socket()         
+print ("Socket successfully created")
+port = 12345                
+s.bind(('', port))         
+print ("socket binded to %s" %(port)) 
+s.listen(5)     
+print ("socket is listening")    
+c, addr = s.accept()   
+message = c.recv(1024).decode()
+fh2=open("story_copy.txt","w")
+fh2.write(message)
+print("Client: File Sent")
+c.close()
 ```
 client.py
 ```
 import socket
-import os
-SERVER_HOST = "127.0.0.1"
-SERVER_PORT = 5001
-BUFFER_SIZE = 4096
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((SERVER_HOST, SERVER_PORT))
-try:
-    filename = input("Enter file name to send: ")
-    if not os.path.exists(filename):
-        print("File does not exist!")
-        client.close()
-        exit()
-    filesize = os.path.getsize(filename)
-    client.send(filename.encode())
-    client.send(str(filesize).encode())
-    print(f"Sending {filename} ({filesize} bytes)")
-    sent_size = 0
-    with open(filename, "rb") as f:
-        while True:
-            bytes_read = f.read(BUFFER_SIZE)
-            if not bytes_read:
-                break
-            client.sendall(bytes_read)
-            sent_size += len(bytes_read)
-            progress = (sent_size / filesize) * 100
-            print(f"Progress: {progress:.2f}%", end="\r")
-    print("\nFile sent successfully!")
-except Exception as e:
-    print("Error:", e)
-finally:
-    client.close()
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect(("127.0.0.1", 12345  ))
+print("Connected to server")
+fh=open("story.txt","r")    
+data=fh.readlines()  
+client_socket.send(' '.join(data).encode())
+print("Server: Flie Recived")
+client_socket.close()
 ```
 ## OUTPUT
-<img width="1123" height="275" alt="Screenshot (74)" src="https://github.com/user-attachments/assets/1ecb0c87-ea24-4305-807d-7f347d8eaea6" />
+<img width="1126" height="257" alt="Screenshot 2026-03-12 161044" src="https://github.com/user-attachments/assets/cc69473f-c416-4c32-b6f1-b3404f45aa16" />
+
+<img width="1248" height="532" alt="image" src="https://github.com/user-attachments/assets/ba42ab18-86d5-4c8d-a81b-63c4ef7632e0" />
 
 ## RESULT
 Thus, the python program for creating File Transfer using TCP Sockets Links was 
